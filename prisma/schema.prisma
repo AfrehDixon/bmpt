@@ -1,0 +1,350 @@
+// ──────────────────────────────────────────────────────────────
+//  BMPT Solutions Website — Prisma schema
+//  Stack: PostgreSQL + Prisma. Every piece of public content is
+//  stored here and managed from the admin CMS (nothing is static).
+// ──────────────────────────────────────────────────────────────
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Admin auth ────────────────────────────────────────────────
+
+model AdminUser {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String
+  passwordHash String
+  role         AdminRole @default(EDITOR)
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  blogPosts BlogPost[]
+
+  @@map("admin_users")
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  EDITOR
+}
+
+// ─── Global site settings (singleton row, id = "default") ──────
+
+model SiteSetting {
+  id           String   @id @default("default")
+  brandName    String   @default("BMPT Solutions")
+  tagline      String   @default("Enabling potentials")
+  logoUrl      String?
+  phone        String   @default("")
+  phoneAlt     String   @default("")
+  email        String   @default("")
+  address      String   @default("")
+  aboutShort   String   @default("")
+  mapEmbedUrl  String   @default("")
+  facebookUrl  String   @default("")
+  twitterUrl   String   @default("")
+  linkedinUrl  String   @default("")
+  instagramUrl String   @default("")
+  footerNote   String   @default("")
+  updatedAt    DateTime @updatedAt
+
+  @@map("site_settings")
+}
+
+// ─── Homepage hero carousel slides ─────────────────────────────
+
+model HeroSlide {
+  id        String   @id @default(cuid())
+  eyebrow   String   @default("What We Do")
+  title     String
+  ctaText   String   @default("Contact Us")
+  ctaLink   String   @default("/contact")
+  imageUrl  String
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("hero_slides")
+}
+
+// ─── "Facts" counters ──────────────────────────────────────────
+
+model Stat {
+  id        String   @id @default(cuid())
+  label     String
+  value     Int      @default(0)
+  suffix    String   @default("")
+  icon      String   @default("Users") // lucide-react icon name
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("stats")
+}
+
+// ─── "Why choose us" features ──────────────────────────────────
+
+model Feature {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  icon        String   @default("CheckCircle")
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("features")
+}
+
+// ─── Services ──────────────────────────────────────────────────
+
+model Service {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  shortDesc   String
+  body        String   @default("") // rich HTML shown on detail / modal
+  icon        String   @default("ShieldCheck")
+  imageUrl    String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("services")
+}
+
+// ─── About page blocks (overview / mission / vision / etc.) ────
+
+model AboutSection {
+  id        String   @id @default(cuid())
+  key       String   @unique // e.g. "overview", "mission", "vision"
+  heading   String
+  body      String
+  imageUrl  String?
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("about_sections")
+}
+
+// ─── Partner / vendor logos ────────────────────────────────────
+
+model Vendor {
+  id        String   @id @default(cuid())
+  name      String
+  imageUrl  String
+  linkUrl   String?
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("vendors")
+}
+
+// ─── Blog ──────────────────────────────────────────────────────
+
+model BlogPost {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  title       String
+  excerpt     String    @default("")
+  body        String    @default("")
+  coverImage  String?
+  category    String    @default("News")
+  isPublished Boolean   @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  authorId String?
+  author   AdminUser? @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@index([isPublished, publishedAt])
+  @@map("blog_posts")
+}
+
+// ─── Contact form submissions ──────────────────────────────────
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String   @default("")
+  message   String
+  service   String   @default("")
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([isRead, createdAt])
+  @@map("contact_messages")
+}
+
+// ─── Top info banner (thin bar across the site) ────────────────
+
+model Banner {
+  id        String     @id @default(cuid())
+  message   String
+  linkText  String     @default("")
+  linkUrl   String     @default("")
+  type      BannerType @default(INFO)
+  isActive  Boolean    @default(false)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@map("banners")
+}
+
+enum BannerType {
+  INFO
+  SUCCESS
+  WARNING
+  PROMO
+}
+
+// ─── Promotion modal (shows on page load) ──────────────────────
+
+model Promotion {
+  id        String    @id @default(cuid())
+  title     String
+  body      String    @default("")
+  imageUrl  String?
+  ctaText   String    @default("Learn More")
+  ctaLink   String    @default("/contact")
+  isActive  Boolean   @default(false)
+  startsAt  DateTime?
+  endsAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("promotions")
+}
+
+// ─── Per-page SEO metadata ─────────────────────────────────────
+
+model SeoMeta {
+  id          String   @id @default(cuid())
+  page        String   @unique // "home" | "about" | "services" | "contact" | "blog"
+  title       String
+  description String   @default("")
+  keywords    String   @default("")
+  ogImage     String?
+  noIndex     Boolean  @default(false)
+  updatedAt   DateTime @updatedAt
+
+  @@map("seo_meta")
+}
+
+// ─── Custom pages (the admin can create whole new pages) ──────
+//
+// When an admin adds a new nav item that points to a slug like
+// `/products`, they create a matching Page here with one or more
+// PageSections (heading + body + image + layout). The public route
+// `app/(public)/[slug]/page.tsx` renders any published page.
+
+model Page {
+  id             String        @id @default(cuid())
+  slug           String        @unique // matches the nav href (no leading slash, e.g. "products")
+  title          String
+  heroTitle      String        @default("")
+  heroSubtitle   String        @default("")
+  heroImageUrl   String?
+  showHeader     Boolean       @default(true)
+  isPublished    Boolean       @default(false)
+  seoTitle       String        @default("")
+  seoDescription String        @default("")
+  ogImage        String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  sections       PageSection[]
+
+  @@map("pages")
+}
+
+enum PageSectionLayout {
+  TEXT_ONLY       // centered text block
+  IMAGE_LEFT      // image left, text right
+  IMAGE_RIGHT     // image right, text left
+  IMAGE_FULL      // full-width image with optional overlay caption
+  CARD            // boxed card with eyebrow + heading + body
+}
+
+enum PageSectionBackground {
+  WHITE
+  LIGHT
+  NAVY
+  BRAND
+}
+
+model PageSection {
+  id         String                @id @default(cuid())
+  pageId     String
+  page       Page                  @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  layout     PageSectionLayout     @default(IMAGE_LEFT)
+  background PageSectionBackground @default(WHITE)
+  eyebrow    String                @default("")
+  heading    String                @default("")
+  body       String                @default("") // HTML
+  imageUrl   String?
+  imageAlt   String                @default("")
+  ctaText    String                @default("")
+  ctaLink    String                @default("")
+  order      Int                   @default(0)
+  isActive   Boolean               @default(true)
+  createdAt  DateTime              @default(now())
+  updatedAt  DateTime              @updatedAt
+
+  @@index([pageId, order])
+  @@map("page_sections")
+}
+
+// ─── Navigation menu (CMS-managed, supports one level of sub-nav) ─
+
+model NavItem {
+  id          String   @id @default(cuid())
+  label       String
+  href        String   @default("/")
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  opensNewTab Boolean  @default(false)
+
+  // Self-relation: when parentId is null this is a top-level link.
+  // When set, this row is a child of the named parent (a dropdown item).
+  parentId String?
+  parent   NavItem?  @relation("NavTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children NavItem[] @relation("NavTree")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([parentId, order])
+  @@map("nav_items")
+}
+
+// ─── Uploaded media library (S3) ───────────────────────────────
+
+model MediaAsset {
+  id          String   @id @default(cuid())
+  key         String   @unique // S3 object key
+  url         String
+  filename    String
+  alt         String   @default("")
+  contentType String   @default("")
+  size        Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  @@map("media_assets")
+}

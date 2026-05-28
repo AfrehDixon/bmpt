@@ -1,0 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --font-inter: 'Inter', system-ui, sans-serif;
+  --font-plus-jakarta: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+  --brand-primary: #00b0f7;
+  --brand-dark: #04015a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-inter);
+  @apply text-slate-700 bg-white antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-family: var(--font-plus-jakarta);
+}
+
+@layer components {
+  .container-bmpt {
+    @apply mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-12;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-brand-500 px-6 py-3
+      text-sm font-semibold text-white shadow-lg shadow-brand-500/25 transition-all
+      hover:bg-brand-700 hover:shadow-brand-500/40 focus:outline-none focus:ring-2
+      focus:ring-brand-400 focus:ring-offset-2;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-white/70
+      px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-white hover:text-navy;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-navy/15
+      px-6 py-3 text-sm font-semibold text-navy transition-all hover:border-brand-500
+      hover:text-brand-600;
+  }
+
+  .eyebrow {
+    @apply text-xs font-bold uppercase tracking-[0.2em] text-brand-600;
+  }
+
+  .section-heading {
+    @apply font-display text-3xl font-bold leading-tight text-navy sm:text-4xl;
+  }
+
+  .card-soft {
+    @apply rounded-2xl border border-slate-100 bg-white p-7 shadow-sm transition-all
+      hover:-translate-y-1 hover:border-brand-200 hover:shadow-xl hover:shadow-brand-500/10;
+  }
+}
+
+/* Rich text rendered from the CMS (TipTap / HTML body) */
+.prose-bmpt {
+  @apply prose prose-slate max-w-none;
+}
+.prose-bmpt a {
+  color: #00b0f7;
+  @apply font-medium no-underline hover:underline;
+}
+.prose-bmpt h1,
+.prose-bmpt h2,
+.prose-bmpt h3 {
+  @apply font-display text-navy;
+}
+
+/* Admin scrollbar */
+.thin-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.thin-scroll::-webkit-scrollbar-thumb {
+  @apply rounded-full bg-slate-300;
+}
+
+/* Reveal-on-scroll helper (progressive enhancement) */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
