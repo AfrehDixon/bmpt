@@ -33,6 +33,15 @@ if (process.env.NODE_ENV !== 'production') globalForRedis.redis = redis;
 
 const DEFAULT_TTL = 60; // seconds
 
+// ISO-8601 date strings come out of JSON.parse as strings. We need them
+// back as Date objects so callers like `promo.updatedAt.toISOString()`
+// and `startsAt <= now` keep working transparently from the cache.
+const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/;
+function reviveDates(_key: string, value: unknown): unknown {
+  if (typeof value === 'string' && ISO_DATE_RE.test(value)) return new Date(value);
+  return value;
+}
+
 /** Read-through cache: returns cached JSON or runs `loader` and caches it. */
 export async function cached<T>(
   key: string,
@@ -42,7 +51,7 @@ export async function cached<T>(
   if (!redis) return loader();
   try {
     const hit = await redis.get(key);
-    if (hit) return JSON.parse(hit) as T;
+    if (hit) return JSON.parse(hit, reviveDates) as T;
   } catch {
     /* ignore cache read failure */
   }

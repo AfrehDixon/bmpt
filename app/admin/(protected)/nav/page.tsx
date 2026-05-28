@@ -54,8 +54,17 @@ export default async function NavAdmin() {
   ];
 
   const fields: FieldSpec[] = [
-    { name: 'label', label: 'Label', type: 'text', required: true, placeholder: 'About Us' },
-    { name: 'href', label: 'Link / URL', type: 'text', required: true, placeholder: '/about or https://…', default: '/' },
+    { name: 'label', label: 'Label', type: 'text', required: true, placeholder: 'Products' },
+    {
+      name: 'href',
+      label: 'Link / URL',
+      type: 'text',
+      required: true,
+      placeholder: '/products',
+      default: '',
+      help:
+        'Use /products for a new custom page (you can then click "Add content" to build it). Use / only for the home link, or a full https://… URL for an external site.',
+    },
     { name: 'parentLabel', label: 'Under', type: 'text', displayOnly: true },
     {
       name: 'parentId',
@@ -98,9 +107,10 @@ export default async function NavAdmin() {
       <div className="mt-8 rounded-2xl border border-slate-100 bg-white p-6 text-sm text-slate-600">
         <h2 className="font-display text-base font-semibold text-navy">Add content directly from here</h2>
         <ul className="mt-3 list-disc space-y-1 pl-5">
-          <li>For a nav link like <code>/products</code>, click <strong>Add content</strong> in the Content column — that creates a draft page at <code>/products</code> and opens its editor.</li>
-          <li>If a page already exists for that link, the column shows <strong>Edit content</strong> instead and takes you straight to the editor.</li>
-          <li>External URLs and built-in pages (Home, About, Services, Contact, Blog) don&apos;t have editable content here — manage those in their own sections.</li>
+          <li>To get an <strong>Add content</strong> button, the <strong>Link / URL</strong> must be a path like <code>/products</code> — not <code>/</code>.</li>
+          <li>Click <strong>Add content</strong> → a draft page is created at that path and the editor opens automatically.</li>
+          <li>Once content exists, the column shows <strong>Edit content</strong> instead and takes you straight to the same editor.</li>
+          <li><code>/</code> is the home link (no separate page to edit). External URLs (<code>https://…</code>) and the built-in pages (<code>/about</code>, <code>/services</code>, <code>/contact</code>, <code>/blog</code>) are managed in their own admin sections.</li>
         </ul>
       </div>
       <div className="mt-6 rounded-2xl border border-slate-100 bg-white p-6 text-sm text-slate-600">

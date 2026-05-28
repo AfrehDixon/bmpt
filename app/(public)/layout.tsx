@@ -51,7 +51,7 @@ export default async function PublicLayout({ children }: { children: React.React
                 imageUrl: promo.imageUrl,
                 ctaText: promo.ctaText,
                 ctaLink: promo.ctaLink,
-                updatedAt: promo.updatedAt.toISOString(),
+                updatedAt: new Date(promo.updatedAt).toISOString(),
               }
             : null
         }
