@@ -12,6 +12,18 @@
  *   • apply a permissive read-only bucket policy
  *   • apply a CORS policy allowing PUTs from your NEXTAUTH_URL origin
  */
+
+// Load .env into process.env. Unlike Next.js/Prisma, standalone tsx
+// scripts don't auto-load .env, so we have to do it ourselves. Uses
+// Node 20.6+'s built-in API — no external dep required.
+try {
+  // Optional chaining so we don't crash on older Node where the API is absent.
+  process.loadEnvFile?.();
+} catch {
+  /* .env missing or unreadable — fall through and let the script
+     surface the more useful "AWS_… not set" message below. */
+}
+
 import {
   S3Client,
   CreateBucketCommand,
