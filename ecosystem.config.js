@@ -14,14 +14,14 @@ module.exports = {
     {
       // ── Identity ──────────────────────────────────────────
       name:   "bmptsolutions-website",
-      cwd:    "/var/www/bmptsolutions-website",
+      cwd: "/var/www/bmpt",
       script: "node_modules/next/dist/bin/next",
       args:   "start -p 4005",
 
       // ── Clustering & performance ─────────────────────────
       // Marketing + CMS in one app. Start with 2 instances; scale
       // out via `instances: "max"` if traffic warrants it.
-      instances:   2,
+      instances:   1,
       exec_mode:   "cluster",
 
       // ── Auto-restart & resilience ────────────────────────
