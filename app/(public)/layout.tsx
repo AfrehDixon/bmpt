@@ -4,11 +4,16 @@ import InfoBanner from '@/components/public/InfoBanner';
 import PromoModal from '@/components/public/PromoModal';
 import { getSettings, getActiveBanner, getActivePromotion, getNavItems } from '@/lib/cms';
 
-// Render public pages on demand (SSR) and rely on Redis (`cached()` in
-// lib/cms.ts) for the hot path. This avoids opening a DB connection per
-// page at build time — important on shared/limited Postgres — and means
-// CMS edits go live immediately rather than waiting for an ISR window.
-export const dynamic = 'force-dynamic';
+// Public pages use ISR — Next.js renders the HTML once, serves it from
+// cache for `revalidate` seconds, then regenerates on the next request.
+// Together with the Redis layer in lib/cms.ts and React's request-scoped
+// cache(), most pageviews cost 0 DB queries and 0 Redis round-trips.
+//
+// CMS edits don't have to wait for the 5-min window: every admin write
+// in app/admin/actions.ts calls `clearCmsCache()` + `revalidatePath('/',
+// 'layout')`, which drops both the Redis cache AND this rendered HTML
+// — so the next pageview after a save renders fresh content immediately.
+export const revalidate = 6000;
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   const [settings, banner, promo, navItems] = await Promise.all([

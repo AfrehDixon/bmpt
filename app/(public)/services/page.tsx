@@ -4,7 +4,7 @@ import Icon from '@/components/Icon';
 import Reveal from '@/components/Reveal';
 import PageHeader from '@/components/public/PageHeader';
 
-export const revalidate = 60;
+export const revalidate = 6000;
 
 export async function generateMetadata() {
   return buildMetadata('services', {

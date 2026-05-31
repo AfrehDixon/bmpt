@@ -6,7 +6,7 @@ import { buildMetadata } from '@/lib/seo';
 import Reveal from '@/components/Reveal';
 import PageHeader from '@/components/public/PageHeader';
 
-export const revalidate = 60;
+export const revalidate = 6000;
 
 export async function generateMetadata() {
   return buildMetadata('blog', {

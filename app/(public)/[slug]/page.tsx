@@ -22,7 +22,10 @@ const RESERVED = new Set([
   'images',
 ]);
 
-export const dynamic = 'force-dynamic';
+// ISR — cached per-slug HTML for 5 min. Admin writes call
+// revalidatePath('/', 'layout') which invalidates this too, so a freshly
+// edited custom page goes live on the next request.
+export const revalidate = 6000;
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   if (RESERVED.has(params.slug)) return {};

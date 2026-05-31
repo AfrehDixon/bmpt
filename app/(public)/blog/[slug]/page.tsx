@@ -5,7 +5,7 @@ import { CalendarDays, ArrowLeft } from 'lucide-react';
 import type { Metadata } from 'next';
 import { getPostBySlug } from '@/lib/cms';
 
-export const revalidate = 60;
+export const revalidate = 6000;
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const post = await getPostBySlug(params.slug);

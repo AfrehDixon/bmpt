@@ -17,7 +17,7 @@ import HeroCarousel from '@/components/public/HeroCarousel';
 import ContactForm from '@/components/public/ContactForm';
 import VendorsMarquee from '@/components/public/VendorsMarquee';
 
-export const revalidate = 60;
+export const revalidate = 6000;
 
 export async function generateMetadata() {
   return buildMetadata('home', {

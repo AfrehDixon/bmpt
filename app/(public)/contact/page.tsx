@@ -5,7 +5,7 @@ import Reveal from '@/components/Reveal';
 import PageHeader from '@/components/public/PageHeader';
 import ContactForm from '@/components/public/ContactForm';
 
-export const revalidate = 60;
+export const revalidate = 6000;
 
 export async function generateMetadata() {
   return buildMetadata('contact', {
