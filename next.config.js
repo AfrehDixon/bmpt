@@ -6,14 +6,12 @@ const nextConfig = {
       // AWS S3 bucket for CMS-uploaded media
       { protocol: 'https', hostname: '*.amazonaws.com' },
     ],
-    // Memory tuning for the in-process image optimizer:
-    // - webp only — AVIF encoding is by far the most RAM-hungry codec.
-    // - cache optimized images for 31 days so we re-encode far less often.
-    // - trim the size variants so fewer derivatives are generated/held.
-    formats: ['image/webp'],
-    minimumCacheTTL: 2678400,
-    deviceSizes: [640, 828, 1200, 1920],
-    imageSizes: [96, 256],
+    // Images already live on S3 — serve them directly instead of running
+    // them through Next's in-process optimizer. This is what was driving
+    // memory up (and the optimizer was failing to serve some images).
+    // Trade-off: no automatic resize/webp, but far lower RAM and images
+    // load straight from S3 with no /_next/image dependency.
+    unoptimized: true,
   },
   eslint: {
     // CMS is internal tooling; don't block production builds on lint.
