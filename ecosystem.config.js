@@ -22,7 +22,11 @@ module.exports = {
       // Marketing + CMS in one app. Start with 2 instances; scale
       // out via `instances: "max"` if traffic warrants it.
       instances:   1,
-      exec_mode:   "cluster",
+      exec_mode:   "fork",
+
+      // Cap Node's heap so V8 garbage-collects more aggressively instead
+      // of letting the old-space grow toward the default ~1.5GB ceiling.
+      node_args: "--max-old-space-size=512",
 
       // ── Auto-restart & resilience ────────────────────────
       autorestart:               true,
